@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Recognition System</title>
+    <style>
+       nav{
+        background-color: orangered;
+        font-size: 1.5em;
+       }
+        html{
+        scroll-behavior: smooth;
+        }
+        nav a{
+            margin-right: 15px;
+            color:black;
+            text-decoration: none;
+        }
+        section{
+            padding: 100px 0;
+        
+        }
+        nav a:hover{
+            text-decoration: underline;
+        }
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .form-container {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select, button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .rank-container {
+            margin-top: 20px;
+        }
+        .rank-container ul {
+            list-style-type: none;
+        }
+        /* New table styles */
+        #student-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #student-table th, #student-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #student-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Recognition System</h1>
+    <nav>
+        <a href="#Add_New_Student">Add New Student</a>
+        <a href="#Rank_Students">Rank Students</a>
+        <a href="#View_All_Students">View All Students</a>
+    </nav>
+    <div align="center">
+    <img src="https://rgmcetblogger.wordpress.com/wp-content/uploads/2017/11/pg-block-photo1.jpg">
+</div>
+    <section id="Add_New_Student">
+    <div class="form-container">
+        <h2>Add New Student</h2>
+        <input type="text" id="name" placeholder="Student Name" />
+        <select id="department">
+            <option value="CSE">CSE</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="Civil">Civil</option>
+        </select>
+        <input type="number" id="year" placeholder="Year" />
+        <input type="number" id="cgpa" placeholder="CGPA" step="0.01" />
+        <input type="number" id="hackathons" placeholder="Hackathons" />
+        <input type="number" id="papers" placeholder="Paper Presentations" />
+        <input type="number" id="ta" placeholder="Teacher Assisting Contributions" />
+        <input type="number" id="core" placeholder="Core Course Performance" step="0.1" />
+        <input type="number" id="consistency" placeholder="Consistency Over Semesters" step="0.1" />
+        <button onclick="addStudent()">Add Student</button>
+    </div>
+</section>
+    <section  id="Rank_Students">
+         <div class="form-container">
+        <h2>Rank Students</h2>
+        <input type="number" id="rankYear" placeholder="Year" />
+        <select id="rankDepartment">
+            <option value="CSE">CSE</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="Civil">Civil</option>
+        </select>
+        <button onclick="rankStudents()">Get Top Students</button>
+
+        <div class="rank-container">
+            <h3>Top 3 Students:</h3>
+            <ul id="rankResults"></ul>
+        </div>
+    </div>
+</section>
+   <section id="View_All_Students">
+    <div class="form-container">
+        <h2 >View All Students</h2>
+        <input type="number" id="filterYear" placeholder="Select Year" />
+        <select id="filterDepartment">
+            <option value="CSE">CSE</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="Civil">Civil</option>
+        </select>
+        <button onclick="getAllStudents()">Get Student Database</button>
+        <button onclick="clearDatabase()">Clear Database</button> <!-- New Clear Database Button -->
+        <table id="student-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>CGPA</th>
+                    <th>Hackathons</th>
+                    <th>Paper Presentations</th>
+                    <th>TA Contributions</th>
+                    <th>Core Course Performance</th>
+                    <th>Consistency Over Semesters</th>
+                </tr>
+            </thead>
+            <tbody id="student-table-body">
+                <!-- Student records will be populated here -->
+            </tbody>
+        </table>
+    </div>
+</section>
+    <script>
+        function addStudent() {
+            const student = {
+                name: document.getElementById('name').value,
+                department: document.getElementById('department').value,
+                year: document.getElementById('year').value,
+                cgpa: parseFloat(document.getElementById('cgpa').value),
+                hackathon_count: parseInt(document.getElementById('hackathons').value),
+                paper_presentations: parseInt(document.getElementById('papers').value),
+                ta_contributions: parseInt(document.getElementById('ta').value),
+                core_course_performance: parseFloat(document.getElementById('core').value),
+                consistency_over_semesters: parseFloat(document.getElementById('consistency').value)
+            };
+
+            fetch('/add_student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(student),
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function rankStudents() {
+            const year = document.getElementById('rankYear').value;
+            const department = document.getElementById('rankDepartment').value;
+
+            fetch(`/rank_students?year=${year}&department=${department}`)
+            .then(response => response.json())
+            .then(data => {
+                const resultsContainer = document.getElementById('rankResults');
+                resultsContainer.innerHTML = '';
+                data.forEach(student => {
+                    const li = document.createElement('li');
+                    li.textContent = `${student.name} - Score: ${student.score.toFixed(2)}`;
+                    resultsContainer.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function getAllStudents() {
+            const year = document.getElementById('filterYear').value;
+            const department = document.getElementById('filterDepartment').value;
+
+            fetch(`/students?year=${year}&department=${department}`)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('student-table-body');
+                tbody.innerHTML = ''; // Clear previous data
+                data.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.department}</td>
+                        <td>${student.year}</td>
+                        <td>${student.cgpa}</td>
+                        <td>${student.hackathon_count}</td>
+                        <td>${student.paper_presentations}</td>
+                        <td>${student.ta_contributions}</td>
+                        <td>${student.core_course_performance}</td>
+                        <td>${student.consistency_over_semesters}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function clearDatabase() {
+            if (confirm("Are you sure you want to clear the entire database? This action cannot be undone.")) {
+                fetch('/clear_database', {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    // Optionally, you might want to refresh the student table
+                    getAllStudents();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+</body>
+</html>
